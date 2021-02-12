@@ -1,5 +1,5 @@
 
-source("./R_Packages/packages.R")
+source("../R_Packages/packages.R")
 
 if (!require(shiny)) install.packages("shiny"); library(shiny)
 
@@ -35,40 +35,26 @@ shinyApp(ui = ui, server = server)
 vars <- setdiff(names(iris), "Species")
 
 ui <- fluidPage(
-  headerPanel('Iris k-means clustering'),
-  tags$h1("First test"),
-  sidebarPanel(
-    selectInput('xcol', 'X Variable', vars, selected = vars[1]),
-    selectInput('ycol', 'Y Variable', vars, selected = vars[2]),
-    numericInput('clusters', 'Cluster count', selected = 3, min = 1, max = 9)
-  ),
   mainPanel(
-    plotOutput('plot1')
-  )
+    plotOutput(outputId = 'plot')
+  ),
+  sliderInput(inputId = "years", 
+              label = "Number of years:", 
+              min = 1,
+              max = 10, 
+              value = 5),
+  numericInput(inputId ="rate", label = "Discount rate:", value=1.1),
+  numericInput(inputId ="investment", label = "Invesed amount:", value=1000)
 )
 
 server <- function(input, output) {
   # Combine the selected variables into a new data frame
-  selectedData <- reactive({
-    iris[, c(input$xcol, input$ycol)]
-  })
   
-  clusters <- reactive({
-    kmeans(selectedData(), input$clusters)
-  })
-  
-  output$plot1 <- renderPlot({
-    palette(c("#E41A1C", "#377EB8", "#4DAF4A", "#984EA3",
-              "#FF7F00", "#FFFF33", "#A65628", "#F781BF", "#999999"))
-
-    par(mar = c(5.1, 4.1, 0, 1))
-    plot(selectedData(),
-         col = clusters()$cluster,
-         pch = 20, cex = 3)
-    points(clusters()$centers, pch = 4, cex = 4, lwd = 4)
-    data.frame(selectedData(), cluster=clusters()$cluster)%>%
-      ggplot(aes_string(x=input$xcol, y=input$ycol, color=cluster))+
-      geom_point()
+  output$plot <- renderPlot({
+    data.frame(years=c(1:input$years), rate=input$rate^c(1:input$years))%>%
+      ggplot(aes(x=years, y=rate*input$investment))+
+      geom_line(size=1)+
+      scale_y_continuous(limits=c(0,input$rate^input$years*input$investment))
 
     })
   

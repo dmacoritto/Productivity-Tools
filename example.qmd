@@ -1,0 +1,89 @@
+---
+title: "Titre de l'analyse"
+abstract: "Rapide description de l'analyse"
+date: "today"
+format:
+  html:
+    keep-md: true
+    embed-resources: true
+    execute:
+      echo: false
+      eval: true
+      warning: false
+---
+
+```{r}
+library(tidyverse)
+library(highcharter)
+library(DT)
+data(diamonds)
+```
+
+
+```{r}
+
+highchart()%>%
+    hc_add_series(data = diamonds%>%head(1000),
+                  type = "point",
+                  hcaes(x = price, y = carat, group = clarity))%>%
+    hc_title(text = "Test",
+             align = "left",
+             margin = 50,
+             style = list(color = "#39393a",
+                          fontFamily = "Roboto",
+                          fontSize = "30px",
+                          fontWeight =  "bold"))%>%
+    hc_subtitle(text = "Subtitle",
+                align = "left",
+                y = 55,
+                style = list(color = "#717b8e",
+                             fontFamily = "Roboto",
+                             fontSize = "15px"))%>%
+    hc_yAxis(title = list(text = "Ca c'est Y",
+                          align = "middle",
+                          style = list(color = "#717b8e",
+                                       fontFamily = "Roboto",
+                                       fontSize = "12px")))%>%
+    hc_xAxis(title = list(text = "Ca c'est X",
+                          align = "middle",
+                          style = list(color = "#717b8e",
+                                       fontFamily = "Roboto",
+                                       fontSize = "12px")),
+             lineWidth = 3,
+             lineColor = "#564f5f")%>%
+    hc_legend(title = list(text = "Legend",
+                           style = list(fontSize = "13px",
+                                        fontWeight =  "normal",
+                                        fontFamily = "Roboto",
+                                        color = "#39393a")),
+              itemStyle = list(fontFamily = "Roboto",
+                               color = "#39393a",
+                               cursor = "pointer",
+                               fontSize = "12px",
+                               fontWeight =  "normal",
+                               textOverflow = "ellipsis"),
+              align = "left",
+              verticalAlign = "bottom",
+              layout = "horizontal",
+              x = 50,
+              enabled = TRUE)%>%
+  hc_tooltip(valueDecimals = 1,
+             backgroundColor = "#FFFFFF",
+             shadow = FALSE,
+             followPointer = TRUE,
+             borderRadius = 0,
+             borderWidth =  1,
+             borderColor = "#e4e4e4",
+             table = FALSE)
+
+
+```
+
+
+```{r DT_table}
+
+DT::datatable(head(diamonds, n = 50), class = 'cell-border stripe')
+
+```
+
+Le nombre de lignes dans diamond et de `r nrow(diamonds)`
